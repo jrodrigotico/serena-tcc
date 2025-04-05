@@ -28,4 +28,4 @@ for month in range(1):
     
     df_total = pd.concat([df_total,df], ignore_index=True)
 
-df_total.to_excel("fuel_mix_ercot.xlsx")
+# df_total.to_excel("fuel_mix_ercot.xlsx")

@@ -26,6 +26,6 @@ for month in range(12):
     
     df_total = pd.concat([df_total,df], ignore_index=True)
 
-df_total.to_excel("load_forecast_1.xlsx")
+# df_total.to_excel("load_forecast_1.xlsx")
 
 
