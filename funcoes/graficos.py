@@ -41,7 +41,7 @@ def plotar_graficos(df, hour, weekday, region):
 def grid_graficos(df, hour, weekday=1):
     # Lista das colunas de temperatura e o total
     regioes = ['avg_temp_celsius', 'coast_tc', 'east_tc', 'far_west_tc', 'north_tc', 
-               'north_central_tc', 'south_central_tc', 'southern_tc', 'west_tc']
+            'north_central_tc', 'south_central_tc', 'southern_tc', 'west_tc']
 
     # Criar o grid 3x3
     fig, axs = plt.subplots(3, 3, figsize=(18, 12))
@@ -83,7 +83,7 @@ def grid_graficos(df, hour, weekday=1):
         ax.legend()
 
     # Ajustes finais
-    plt.suptitle(f"Regressão Temperatura vs Carga - Hora {hour}, Weekday {weekday}", fontsize=16)
+    plt.suptitle(f"Temperatura vs Carga - Hora {hour}, Weekday {weekday}", fontsize=16)
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     plt.show()
 
