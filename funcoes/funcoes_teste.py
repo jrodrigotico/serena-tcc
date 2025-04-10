@@ -4,77 +4,78 @@ from sklearn.model_selection import train_test_split, KFold
 from sklearn.metrics import mean_squared_error, r2_score
 
 
-def treinamento_media_simples(df_long, weekday=None, hour=None, k=5):
+def treinamento_media_simples(df, weekday=None, hour=None, k=5):
     resultados = []
 
-    # Aplicar filtros, se houver
+    # Aplicar filtros antes do agrupamento
     if weekday is not None:
-        df_long = df_long[df_long['weekday'] == weekday]
+        df = df[df['weekday'] == weekday]
     if hour is not None:
-        df_long = df_long[df_long['hour'] == hour]
+        df = df[df['hour'] == hour]
 
-    zonas = df_long['regiao'].unique()
+    # Agrupar por horário e tirar a média simples das temperaturas por horário
+    df_media = df.groupby('interval_start_utc').agg({
+        'temperatura': 'mean',
+        'carga': 'first'  # A carga já está associada ao horário (não varia por região)
+    }).reset_index()
 
-    for zona in zonas:
-        dados = df_long[df_long['regiao'] == zona].dropna(subset=['temperatura', 'carga'])
+    X = df_media[['temperatura']].values
+    y = df_media['carga'].values
 
-        X = dados[['temperatura']].values
-        y = dados['carga'].values
+    # Preparar termos quadráticos
+    X_poly = np.hstack((X**2, X, np.ones_like(X)))
 
-        # Preparar termos quadráticos
-        X_poly = np.hstack((X**2, X, np.ones_like(X)))
+    # Divisão: 70% treino | 15% teste | 15% validação
+    X_train, X_temp, y_train, y_temp = train_test_split(X_poly, y, test_size=0.3, random_state=42)
+    X_test, X_val, y_test, y_val = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
 
-        # Divisão: 70% treino | 15% teste | 15% validação
-        X_train, X_temp, y_train, y_temp = train_test_split(X_poly, y, test_size=0.3, random_state=42)
-        X_test, X_val, y_test, y_val = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+    # Ajuste com MQO (usando base de treino)
+    coef, *_ = np.linalg.lstsq(X_train, y_train, rcond=None)
 
-        # Ajuste com MQO (usando base de treino)
-        coef, *_ = np.linalg.lstsq(X_train, y_train, rcond=None)
+    # Previsões
+    y_pred_train = X_train @ coef
+    y_pred_test = X_test @ coef
+    y_pred_val = X_val @ coef
 
-        # Previsões
-        y_pred_train = X_train @ coef
-        y_pred_test = X_test @ coef
-        y_pred_val = X_val @ coef
+    # Métricas
+    rmse_train = mean_squared_error(y_train, y_pred_train, squared=False)
+    rmse_test = mean_squared_error(y_test, y_pred_test, squared=False)
+    rmse_val = mean_squared_error(y_val, y_pred_val, squared=False)
 
-        # Métricas
-        rmse_train = mean_squared_error(y_train, y_pred_train, squared=False)
-        rmse_test = mean_squared_error(y_test, y_pred_test, squared=False)
-        rmse_val = mean_squared_error(y_val, y_pred_val, squared=False)
+    r2_train = r2_score(y_train, y_pred_train)
+    r2_test = r2_score(y_test, y_pred_test)
+    r2_val = r2_score(y_val, y_pred_val)
 
-        r2_train = r2_score(y_train, y_pred_train)
-        r2_test = r2_score(y_test, y_pred_test)
-        r2_val = r2_score(y_val, y_pred_val)
+    # Cross-validation na base de validação
+    kf = KFold(n_splits=k, shuffle=True, random_state=42)
+    rmse_cv_scores = []
+    for train_index, test_index in kf.split(X_val):
+        X_cv_train, X_cv_test = X_val[train_index], X_val[test_index]
+        y_cv_train, y_cv_test = y_val[train_index], y_val[test_index]
 
-        # Cross-validation na base de validação
-        kf = KFold(n_splits=k, shuffle=True, random_state=42)
-        rmse_cv_scores = []
-        for train_index, test_index in kf.split(X_val):
-            X_cv_train, X_cv_test = X_val[train_index], X_val[test_index]
-            y_cv_train, y_cv_test = y_val[train_index], y_val[test_index]
+        coef_cv, *_ = np.linalg.lstsq(X_cv_train, y_cv_train, rcond=None)
+        y_cv_pred = X_cv_test @ coef_cv
+        rmse_cv = mean_squared_error(y_cv_test, y_cv_pred, squared=False)
+        rmse_cv_scores.append(rmse_cv)
 
-            coef_cv, *_ = np.linalg.lstsq(X_cv_train, y_cv_train, rcond=None)
-            y_cv_pred = X_cv_test @ coef_cv
-            rmse_cv = mean_squared_error(y_cv_test, y_cv_pred, squared=False)
-            rmse_cv_scores.append(rmse_cv)
+    rmse_cv_mean = np.mean(rmse_cv_scores)
+    rmse_cv_std = np.std(rmse_cv_scores)
 
-        rmse_cv_mean = np.mean(rmse_cv_scores)
-        rmse_cv_std = np.std(rmse_cv_scores)
-
-        # Resultados para tabela
-        resultados.append({
-            'regiao': zona,
-            'equacao': f"y = {int(round(coef[0]))}x² + {int(round(coef[1]))}x + {int(round(coef[2]))}",
-            'RMSE Treino': rmse_train,
-            'RMSE Teste': rmse_test,
-            'RMSE Validação': rmse_val,
-            'R² Treino': r2_train,
-            'R² Teste': r2_test,
-            'R² Validação': r2_val,
-            'CV RMSE Médio': rmse_cv_mean,
-            'CV RMSE DP': rmse_cv_std
-        })
+    # Resultados para tabela
+    resultados.append({
+        'equacao': f"y = {int(round(coef[0]))}x² + {int(round(coef[1]))}x + {int(round(coef[2]))}",
+        'RMSE Treino': rmse_train,
+        'RMSE Teste': rmse_test,
+        'RMSE Validação': rmse_val,
+        'R² Treino': r2_train,
+        'R² Teste': r2_test,
+        'R² Validação': r2_val,
+        'CV RMSE Médio': rmse_cv_mean,
+        'CV RMSE DP': rmse_cv_std
+    })
 
     return pd.DataFrame(resultados)
+
 
 
 
