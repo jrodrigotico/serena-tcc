@@ -4,8 +4,8 @@ Mede o erro médio entre os valores observados e os previstos.
 Quanto menor, melhor o ajuste.
 
 Compare:
-RMSE Treino vs. Teste vs. Validação:
 
+RMSE Treino vs. Teste vs. Validação:
 Se o RMSE do treino for muito menor que o teste/validação → overfitting.
 Se os RMSEs forem todos altos → modelo não está capturando bem a relação (talvez underfitting ou modelo inadequado).
 
@@ -19,6 +19,29 @@ A média do RMSE da validação cruzada (CV RMSE Médio) indica se o modelo é e
 O desvio padrão (CV RMSE Desvio Padrão) mostra a variabilidade entre os folds.
 Se for alto → os resultados variam muito entre os subconjuntos → o modelo é sensível à amostragem.
 Se for baixo → o modelo é consistente.
+
+    ✅ 1. CV RMSE Médio
+    Compare com a média da variável de interesse (ex: média da carga elétrica):
+    Se o CV RMSE Médio for abaixo de 10% da média da carga, é muito bom.
+    De 10% a 20%, é aceitável.
+    Acima de 20%, o modelo já pode estar com problemas de ajuste.
+
+    🔢 Exemplo:
+    Se a média da carga for 10.000 MW, então:
+    RMSE abaixo de 1.000 (10%) → ótimo
+    Entre 1.000 e 2.000 → ok
+    Acima de 2.000 → atenção
+
+    📉 2. CV RMSE Desvio Padrão (DP)
+    Você pode comparar com o próprio CV RMSE Médio:
+    Se o DP for menor que 20% do CV RMSE Médio, é bom → indica que os resultados são consistentes entre os folds.
+    Se for maior que 30%, é sinal de instabilidade.
+
+    🔢 Exemplo:
+    Se o CV RMSE Médio = 1500, então:
+    CV RMSE DP < 300 → ótimo
+    CV RMSE DP entre 300 e 450 → aceitável
+    CV RMSE DP > 450 → modelo inconsistente
 
 
 ✅ 2. Compare entre regiões (zonas):
