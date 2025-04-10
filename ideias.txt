@@ -1,0 +1,103 @@
+✅ 1. Interprete as métricas:
+RMSE (Erro Quadrático Médio da Raiz)
+Mede o erro médio entre os valores observados e os previstos.
+Quanto menor, melhor o ajuste.
+
+Compare:
+
+RMSE Treino vs. Teste vs. Validação:
+Se o RMSE do treino for muito menor que o teste/validação → overfitting.
+Se os RMSEs forem todos altos → modelo não está capturando bem a relação (talvez underfitting ou modelo inadequado).
+
+R² (Coeficiente de Determinação)
+Indica quanto da variação da variável dependente é explicada pelo modelo.
+Varia entre 0 e 1 (quanto mais próximo de 1, melhor).
+Interprete da mesma forma: Treino vs. Teste vs. Validação.
+
+Cross-validation na Validação
+A média do RMSE da validação cruzada (CV RMSE Médio) indica se o modelo é estável.
+O desvio padrão (CV RMSE Desvio Padrão) mostra a variabilidade entre os folds.
+Se for alto → os resultados variam muito entre os subconjuntos → o modelo é sensível à amostragem.
+Se for baixo → o modelo é consistente.
+
+    ✅ 1. CV RMSE Médio
+    Compare com a média da variável de interesse (ex: média da carga elétrica):
+    Se o CV RMSE Médio for abaixo de 10% da média da carga, é muito bom.
+    De 10% a 20%, é aceitável.
+    Acima de 20%, o modelo já pode estar com problemas de ajuste.
+
+    🔢 Exemplo:
+    Se a média da carga for 10.000 MW, então:
+    RMSE abaixo de 1.000 (10%) → ótimo
+    Entre 1.000 e 2.000 → ok
+    Acima de 2.000 → atenção
+
+    📉 2. CV RMSE Desvio Padrão (DP)
+    Você pode comparar com o próprio CV RMSE Médio:
+    Se o DP for menor que 20% do CV RMSE Médio, é bom → indica que os resultados são consistentes entre os folds.
+    Se for maior que 30%, é sinal de instabilidade.
+
+    🔢 Exemplo:
+    Se o CV RMSE Médio = 1500, então:
+    CV RMSE DP < 300 → ótimo
+    CV RMSE DP entre 300 e 450 → aceitável
+    CV RMSE DP > 450 → modelo inconsistente
+
+
+✅ 2. Compare entre regiões (zonas):
+Monte rankings ou gráficos:
+Regiões com menor RMSE e maior R² → bom desempenho.
+Regiões com grande diferença entre treino e validação → talvez tenha comportamento atípico ou falta de dados.
+
+Pergunte-se:
+Qual região teve o melhor ajuste?
+Onde o modelo não funciona bem?
+Há regiões com maior variabilidade climática ou padrão de carga diferente?
+
+
+✅ 3. Verifique a equação gerada
+Analise os sinais dos coeficientes:
+Se 𝛽2 (termo quadrático) é positivo → curva em “U” (mínimo local).
+Se é negativo → curva em “∩” (máximo local).
+
+Isso pode indicar:
+Temperatura ideal onde o consumo é mínimo.
+Consumo aumentando para temperaturas extremas (frio ou calor).
+
+
+✅ 4. Sugestões de visualizações
+Gráfico de dispersão + curva de ajuste por zona.
+Boxplots do RMSE por zona.
+Mapa ou heatmap mostrando regiões com melhor e pior desempenho.
+
+
+✅ 5. Conclusões e recomendações
+Seu objetivo é prever carga com base na temperatura.
+
+Conclua:
+Em que regiões o modelo pode ser usado de forma confiável?
+Onde há necessidade de modelos mais complexos (ex: incluir outras variáveis além de temperatura)?
+Que horas do dia/dias da semana são mais fáceis ou difíceis de modelar?
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+Diversos estudos apontam que a relação entre temperatura e carga elétrica não segue, necessariamente,
+um padrão linear. Em geral, observa-se um comportamento em forma de curva, onde a demanda por energia tende
+a ser menor em temperaturas amenas, e mais alta em extremos térmicos — tanto no frio quanto no calor. 
+Essa dinâmica ocorre devido ao aumento do uso de sistemas de aquecimento em dias frios e de resfriamento (ar-condicionado e refrigeração) em
+dias quentes. Esse padrão resulta em uma relação não linear, frequentemente capturada por modelos quadráticos ou de ordem superior. 
+Dessa forma, para representar adequadamente essa relação no modelo proposto, optou-se por incluir um termo quadrático da variável
+temperatura na regressão, o que permite acomodar curvaturas e melhor ajustar os dados. Tal abordagem está em consonância com
+a literatura técnica e com práticas já consolidadas em modelagens de consumo energético baseadas em temperatura (Miller & Carlson, 2011; Taylor, 2010).
+
+Miller, A., & Carlson, R. (2011). Modeling Energy Demand as a Function of Weather. Journal of Energy Economics, 33(2), 335-345.
+Taylor, J. W. (2010). Triple Seasonal Methods for Short-Term Electricity Demand Forecasting. European Journal of Operational Research, 204(1), 139–152.
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
