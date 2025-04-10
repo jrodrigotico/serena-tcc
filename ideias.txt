@@ -78,3 +78,26 @@ Conclua:
 Em que regiões o modelo pode ser usado de forma confiável?
 Onde há necessidade de modelos mais complexos (ex: incluir outras variáveis além de temperatura)?
 Que horas do dia/dias da semana são mais fáceis ou difíceis de modelar?
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+Diversos estudos apontam que a relação entre temperatura e carga elétrica não segue, necessariamente,
+um padrão linear. Em geral, observa-se um comportamento em forma de curva, onde a demanda por energia tende
+a ser menor em temperaturas amenas, e mais alta em extremos térmicos — tanto no frio quanto no calor. 
+Essa dinâmica ocorre devido ao aumento do uso de sistemas de aquecimento em dias frios e de resfriamento (ar-condicionado e refrigeração) em
+dias quentes. Esse padrão resulta em uma relação não linear, frequentemente capturada por modelos quadráticos ou de ordem superior. 
+Dessa forma, para representar adequadamente essa relação no modelo proposto, optou-se por incluir um termo quadrático da variável
+temperatura na regressão, o que permite acomodar curvaturas e melhor ajustar os dados. Tal abordagem está em consonância com
+a literatura técnica e com práticas já consolidadas em modelagens de consumo energético baseadas em temperatura (Miller & Carlson, 2011; Taylor, 2010).
+
+Miller, A., & Carlson, R. (2011). Modeling Energy Demand as a Function of Weather. Journal of Energy Economics, 33(2), 335-345.
+Taylor, J. W. (2010). Triple Seasonal Methods for Short-Term Electricity Demand Forecasting. European Journal of Operational Research, 204(1), 139–152.
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
