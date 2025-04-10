@@ -1,4 +1,3 @@
-
 def trocar_temp(df):
     colunas_fahrenheit = [
         'coast_tf',
