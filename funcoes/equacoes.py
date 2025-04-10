@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from sklearn.metrics import mean_squared_error, r2_score
 
 def tabela_equacoes(df, n_weekday):
     # Listas de colunas (temperatura e carga)
@@ -47,54 +46,3 @@ def tabela_equacoes(df, n_weekday):
     return df_equacoes
 
 
-def tabela_metricas(df, n_weekday):
-    # Listas de colunas (temperatura e carga)
-    colunas_tc = ['avg_temp_celsius', 'coast_tc', 'east_tc', 'far_west_tc', 'north_tc',
-                    'north_central_tc', 'south_central_tc', 'southern_tc', 'west_tc']
-
-    colunas_carga = ['sum_load', 'coast_carga', 'east_carga', 'far_west_carga', 'north_carga',
-                     'north_central_carga', 'south_central_carga', 'southern_carga', 'west_carga']
-
-    # Dicionário para armazenar as métricas por hora
-    resultados = {"Hora": list(range(24))}
-
-    for temp_col, carga_col in zip(colunas_tc, colunas_carga):
-        r2_list = []
-        rmse_list = []
-
-        for hora in range(24):
-            # Filtro de dados
-            filtro = (df['hour'] == hora) & (df[temp_col] < 105) & (df['weekday'] == n_weekday)
-            dados_filtrados = df[filtro]
-
-            if dados_filtrados.shape[0] < 3:
-                r2_list.append(None)
-                rmse_list.append(None)
-                continue
-
-            try:
-                X = dados_filtrados[temp_col].values
-                y = dados_filtrados[carga_col].values
-
-                # Regressão quadrática
-                X_poly = np.vstack([X**2, X, np.ones_like(X)]).T
-                coef, *_ = np.linalg.lstsq(X_poly, y, rcond=None)
-
-                y_pred = X_poly @ coef
-                r2 = r2_score(y, y_pred)
-                rmse = mean_squared_error(y, y_pred, squared=False)
-
-                r2_list.append(round(r2, 3))
-                rmse_list.append(round(rmse, 2))
-            except:
-                r2_list.append(None)
-                rmse_list.append(None)
-
-        # Salva os resultados
-        resultados[f"{temp_col}_R2"] = r2_list
-        resultados[f"{temp_col}_RMSE"] = rmse_list
-
-    # Criação do DataFrame final
-    df_metricas = pd.DataFrame(resultados)
-    
-    return df_metricas
