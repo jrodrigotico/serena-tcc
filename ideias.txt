@@ -1,0 +1,57 @@
+✅ 1. Interprete as métricas:
+RMSE (Erro Quadrático Médio da Raiz)
+Mede o erro médio entre os valores observados e os previstos.
+Quanto menor, melhor o ajuste.
+
+Compare:
+RMSE Treino vs. Teste vs. Validação:
+
+Se o RMSE do treino for muito menor que o teste/validação → overfitting.
+Se os RMSEs forem todos altos → modelo não está capturando bem a relação (talvez underfitting ou modelo inadequado).
+
+R² (Coeficiente de Determinação)
+Indica quanto da variação da variável dependente é explicada pelo modelo.
+Varia entre 0 e 1 (quanto mais próximo de 1, melhor).
+Interprete da mesma forma: Treino vs. Teste vs. Validação.
+
+Cross-validation na Validação
+A média do RMSE da validação cruzada (CV RMSE Médio) indica se o modelo é estável.
+O desvio padrão (CV RMSE Desvio Padrão) mostra a variabilidade entre os folds.
+Se for alto → os resultados variam muito entre os subconjuntos → o modelo é sensível à amostragem.
+Se for baixo → o modelo é consistente.
+
+
+✅ 2. Compare entre regiões (zonas):
+Monte rankings ou gráficos:
+Regiões com menor RMSE e maior R² → bom desempenho.
+Regiões com grande diferença entre treino e validação → talvez tenha comportamento atípico ou falta de dados.
+
+Pergunte-se:
+Qual região teve o melhor ajuste?
+Onde o modelo não funciona bem?
+Há regiões com maior variabilidade climática ou padrão de carga diferente?
+
+
+✅ 3. Verifique a equação gerada
+Analise os sinais dos coeficientes:
+Se 𝛽2 (termo quadrático) é positivo → curva em “U” (mínimo local).
+Se é negativo → curva em “∩” (máximo local).
+
+Isso pode indicar:
+Temperatura ideal onde o consumo é mínimo.
+Consumo aumentando para temperaturas extremas (frio ou calor).
+
+
+✅ 4. Sugestões de visualizações
+Gráfico de dispersão + curva de ajuste por zona.
+Boxplots do RMSE por zona.
+Mapa ou heatmap mostrando regiões com melhor e pior desempenho.
+
+
+✅ 5. Conclusões e recomendações
+Seu objetivo é prever carga com base na temperatura.
+
+Conclua:
+Em que regiões o modelo pode ser usado de forma confiável?
+Onde há necessidade de modelos mais complexos (ex: incluir outras variáveis além de temperatura)?
+Que horas do dia/dias da semana são mais fáceis ou difíceis de modelar?
