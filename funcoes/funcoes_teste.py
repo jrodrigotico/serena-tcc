@@ -16,9 +16,6 @@ def treinamento_media_simples(df, k=5):
             dados = df[(df['regiao'] == zona) & (df['hour'] == hora)]
             dados = dados.dropna(subset=['temperatura', 'carga'])
 
-            if len(dados) < k:
-                continue
-
             X = dados[['temperatura']].values
             y = dados['carga'].values
 
@@ -81,11 +78,6 @@ def treinamento_media_simples(df, k=5):
     return pd.DataFrame(resultados)
 
 
-
-
-
-
-
 def treinamento_ponderado_por_zona_e_hora(df, k=5):
     resultados = []
 
@@ -96,9 +88,6 @@ def treinamento_ponderado_por_zona_e_hora(df, k=5):
         for hora in horas:
             dados = df[(df['regiao'] == zona) & (df['hour'] == hora)]
             dados = dados.dropna(subset=['temp_ponderada_pop', 'carga'])
-
-            if len(dados) < k:
-                continue
 
             X = dados[['temp_ponderada_pop']].values
             y = dados['carga'].values
@@ -161,8 +150,6 @@ def treinamento_ponderado_por_zona_e_hora(df, k=5):
     return pd.DataFrame(resultados)
 
 
-
-
 def treinamento_por_weather_zone_e_hora_cv(df, weekday=None, k=5):
     zonas = ['coast', 'east', 'far_west', 'north', 'north_central',
              'south_central', 'southern', 'west']
@@ -185,10 +172,6 @@ def treinamento_por_weather_zone_e_hora_cv(df, weekday=None, k=5):
 
             X = dados[[temp_col]].values
             y = dados[carga_col].values
-
-            if len(X) < 10:
-                print(f"Poucos dados para zona {zona} na hora {hora}. Pulando...")
-                continue
 
             # Divisão dos dados
             X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
