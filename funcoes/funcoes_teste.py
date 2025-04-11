@@ -78,6 +78,7 @@ def treinamento_media_simples(df, k=5):
     return pd.DataFrame(resultados)
 
 
+
 def treinamento_ponderado_por_zona_e_hora(df, k=5):
     resultados = []
 

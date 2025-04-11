@@ -33,8 +33,11 @@ def preparar_df_long_com_ponderada(df, df_pop, weekday=None, hour=None):
     }
     soma_total_pesos = sum(pesos.values())
 
-    # Calcular temp_ponderada_pop
+    # Calcular temperatura ponderada pela população
     df['temp_ponderada_pop'] = sum(df[f'{zona}_tc'] * pesos[zona] for zona in zonas) / soma_total_pesos
+
+    # Calcular temperatura média simples (sem ponderação)
+    df['avg_temp_celsius'] = df[[f'{zona}_tc' for zona in zonas]].mean(axis=1)
 
     # Aplicar filtros, se existirem
     if weekday is not None:
@@ -44,7 +47,7 @@ def preparar_df_long_com_ponderada(df, df_pop, weekday=None, hour=None):
 
     # Melt de temperatura
     df_temp = df.melt(
-        id_vars=['interval_start_utc', 'hour', 'weekday', 'temp_ponderada_pop'],
+        id_vars=['interval_start_utc', 'hour', 'weekday', 'temp_ponderada_pop', 'avg_temp_celsius'],
         value_vars=[f"{zona}_tc" for zona in zonas],
         var_name='regiao',
         value_name='temperatura'
@@ -66,4 +69,5 @@ def preparar_df_long_com_ponderada(df, df_pop, weekday=None, hour=None):
     df_long = df_temp.merge(df_carga, on=['interval_start_utc', 'regiao'])
 
     return df_long
+
 
