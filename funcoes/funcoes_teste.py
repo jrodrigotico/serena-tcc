@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split, KFold
 from sklearn.metrics import mean_squared_error, r2_score
 
-
+# funcoes com df long
 def treinamento_media_simples(df, k=5):
     resultados = []
 
@@ -78,78 +78,67 @@ def treinamento_media_simples(df, k=5):
     return pd.DataFrame(resultados)
 
 
+def treinamento_estado_total_pond(df, k=5):
+    # Remove valores nulos
+    df = df.dropna(subset=['temp_ponderada_pop', 'sum_load'])
 
-def treinamento_ponderado_por_zona_e_hora(df, k=5):
-    resultados = []
+    X = df[['temp_ponderada_pop']].values
+    y = df['sum_load'].values
 
-    zonas = df['regiao'].unique()
-    horas = sorted(df['hour'].unique())
+    # Divisão em treino (70%), teste (15%) e validação (15%)
+    X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
+    X_test, X_val, y_test, y_val = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
 
-    for zona in zonas:
-        for hora in horas:
-            dados = df[(df['regiao'] == zona) & (df['hour'] == hora)]
-            dados = dados.dropna(subset=['temp_ponderada_pop', 'carga'])
+    # Modelo quadrático
+    X_train_poly = np.hstack((X_train**2, X_train, np.ones_like(X_train)))
+    coef, *_ = np.linalg.lstsq(X_train_poly, y_train, rcond=None)
 
-            X = dados[['temp_ponderada_pop']].values
-            y = dados['carga'].values
+    # Previsões
+    y_pred_train = X_train_poly @ coef
+    X_test_poly = np.hstack((X_test**2, X_test, np.ones_like(X_test)))
+    y_pred_test = X_test_poly @ coef
+    X_val_poly = np.hstack((X_val**2, X_val, np.ones_like(X_val)))
+    y_pred_val = X_val_poly @ coef
 
-            # Divisão 70/15/15
-            X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
-            X_test, X_val, y_test, y_val = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+    # Métricas
+    rmse_train = mean_squared_error(y_train, y_pred_train, squared=False)
+    r2_train = r2_score(y_train, y_pred_train)
+    rmse_test = mean_squared_error(y_test, y_pred_test, squared=False)
+    r2_test = r2_score(y_test, y_pred_test)
+    rmse_val = mean_squared_error(y_val, y_pred_val, squared=False)
+    r2_val = r2_score(y_val, y_pred_val)
 
-            # Quadrática
-            X_train_poly = np.hstack((X_train**2, X_train, np.ones_like(X_train)))
-            coef, *_ = np.linalg.lstsq(X_train_poly, y_train, rcond=None)
+    # Validação cruzada sobre a base de validação
+    kf = KFold(n_splits=k, shuffle=True, random_state=42)
+    rmse_cv_scores = []
 
-            # Previsões
-            y_pred_train = X_train_poly @ coef
-            X_test_poly = np.hstack((X_test**2, X_test, np.ones_like(X_test)))
-            y_pred_test = X_test_poly @ coef
-            X_val_poly = np.hstack((X_val**2, X_val, np.ones_like(X_val)))
-            y_pred_val = X_val_poly @ coef
+    for train_idx, test_idx in kf.split(X_val):
+        X_cv_train, X_cv_test = X_val[train_idx], X_val[test_idx]
+        y_cv_train, y_cv_test = y_val[train_idx], y_val[test_idx]
 
-            # Métricas
-            rmse_train = mean_squared_error(y_train, y_pred_train, squared=False)
-            r2_train = r2_score(y_train, y_pred_train)
-            rmse_test = mean_squared_error(y_test, y_pred_test, squared=False)
-            r2_test = r2_score(y_test, y_pred_test)
-            rmse_val = mean_squared_error(y_val, y_pred_val, squared=False)
-            r2_val = r2_score(y_val, y_pred_val)
+        X_cv_train_poly = np.hstack((X_cv_train**2, X_cv_train, np.ones_like(X_cv_train)))
+        X_cv_test_poly = np.hstack((X_cv_test**2, X_cv_test, np.ones_like(X_cv_test)))
 
-            # Cross-validation na validação
-            kf = KFold(n_splits=k, shuffle=True, random_state=42)
-            rmse_cv_scores = []
+        coef_cv, *_ = np.linalg.lstsq(X_cv_train_poly, y_cv_train, rcond=None)
+        y_cv_pred = X_cv_test_poly @ coef_cv
+        rmse_cv_scores.append(mean_squared_error(y_cv_test, y_cv_pred, squared=False))
 
-            for train_idx, test_idx in kf.split(X_val):
-                X_cv_train, X_cv_test = X_val[train_idx], X_val[test_idx]
-                y_cv_train, y_cv_test = y_val[train_idx], y_val[test_idx]
+    rmse_cv_mean = np.mean(rmse_cv_scores)
+    rmse_cv_std = np.std(rmse_cv_scores)
 
-                X_cv_train_poly = np.hstack((X_cv_train**2, X_cv_train, np.ones_like(X_cv_train)))
-                X_cv_test_poly = np.hstack((X_cv_test**2, X_cv_test, np.ones_like(X_cv_test)))
+    resultado = {
+        'equacao': f"y = {coef[0]:.2f}x² {coef[1]:+.2f}x {coef[2]:+.2f}",
+        'RMSE Treino': rmse_train,
+        'R² Treino': r2_train,
+        'RMSE Teste': rmse_test,
+        'R² Teste': r2_test,
+        'RMSE Validação': rmse_val,
+        'R² Validação': r2_val,
+        'CV RMSE Médio': rmse_cv_mean,
+        'CV RMSE DP': rmse_cv_std
+    }
 
-                coef_cv, *_ = np.linalg.lstsq(X_cv_train_poly, y_cv_train, rcond=None)
-                y_cv_pred = X_cv_test_poly @ coef_cv
-                rmse_cv_scores.append(mean_squared_error(y_cv_test, y_cv_pred, squared=False))
-
-            rmse_cv_mean = np.mean(rmse_cv_scores)
-            rmse_cv_std = np.std(rmse_cv_scores)
-
-            resultados.append({
-                'regiao': zona,
-                'hora': hora,
-                'equacao': f"y = {coef[0]:.2f}x² {coef[1]:+.2f}x {coef[2]:+.2f}",
-                'RMSE Treino': rmse_train,
-                'R² Treino': r2_train,
-                'RMSE Teste': rmse_test,
-                'R² Teste': r2_test,
-                'RMSE Validação': rmse_val,
-                'R² Validação': r2_val,
-                'CV RMSE Médio': rmse_cv_mean,
-                'CV RMSE DP': rmse_cv_std
-            })
-
-    return pd.DataFrame(resultados)
-
+    return pd.DataFrame([resultado])
 
 def treinamento_por_weather_zone_e_hora_cv(df, weekday=None, k=5):
     zonas = ['coast', 'east', 'far_west', 'north', 'north_central',
@@ -235,3 +224,80 @@ def treinamento_por_weather_zone_e_hora_cv(df, weekday=None, k=5):
 
 
 
+# funcoes df large
+def modelo_estado_temp_media(df, k=5):
+    resultados = []
+    horas = sorted(df['hour'].unique())
+
+    for hora in horas:
+        dados = df[df['hour'] == hora].dropna(subset=['avg_temp_celsius', 'sum_load'])
+
+        X = dados[['avg_temp_celsius']].values
+        y = dados['sum_load'].values
+
+        # Split
+        X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
+        X_test, X_val, y_test, y_val = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+
+        # Regressão quadrática
+        X_train_poly = np.hstack((X_train**2, X_train, np.ones_like(X_train)))
+        coef, *_ = np.linalg.lstsq(X_train_poly, y_train, rcond=None)
+
+        # Previsões
+        y_pred_train = X_train_poly @ coef
+        X_test_poly = np.hstack((X_test**2, X_test, np.ones_like(X_test)))
+        y_pred_test = X_test_poly @ coef
+        X_val_poly = np.hstack((X_val**2, X_val, np.ones_like(X_val)))
+        y_pred_val = X_val_poly @ coef
+
+        # Métricas
+        rmse_train = mean_squared_error(y_train, y_pred_train, squared=False)
+        rmse_test = mean_squared_error(y_test, y_pred_test, squared=False)
+        rmse_val = mean_squared_error(y_val, y_pred_val, squared=False)
+
+        r2_train = r2_score(y_train, y_pred_train)
+        r2_test = r2_score(y_test, y_pred_test)
+        r2_val = r2_score(y_val, y_pred_val)
+
+        # Validação cruzada
+        kf = KFold(n_splits=k, shuffle=True, random_state=42)
+        rmse_cv_scores = []
+
+        for train_idx, test_idx in kf.split(X_val):
+            X_cv_train, X_cv_test = X_val[train_idx], X_val[test_idx]
+            y_cv_train, y_cv_test = y_val[train_idx], y_val[test_idx]
+
+            X_cv_train_poly = np.hstack((X_cv_train**2, X_cv_train, np.ones_like(X_cv_train)))
+            X_cv_test_poly = np.hstack((X_cv_test**2, X_cv_test, np.ones_like(X_cv_test)))
+
+            coef_cv, *_ = np.linalg.lstsq(X_cv_train_poly, y_cv_train, rcond=None)
+            y_cv_pred = X_cv_test_poly @ coef_cv
+            rmse_cv_scores.append(mean_squared_error(y_cv_test, y_cv_pred, squared=False))
+
+        resultados.append({
+            'hora': hora,
+            'variavel': 'avg_temp_celsius',
+            'equacao': f"y = {coef[0]:.2f}x² {coef[1]:+.2f}x {coef[2]:+.2f}",
+            'RMSE Treino': rmse_train,
+            'R² Treino': r2_train,
+            'RMSE Teste': rmse_test,
+            'R² Teste': r2_test,
+            'RMSE Validação': rmse_val,
+            'R² Validação': r2_val,
+            'CV RMSE Médio': np.mean(rmse_cv_scores),
+            'CV RMSE DP': np.std(rmse_cv_scores)
+        })
+
+    return pd.DataFrame(resultados)
+
+
+
+def modelo_estado_temp_ponderada(df, k=5):
+    resultados = []
+    horas = sorted(df['hour'].unique())
+
+    for hora in horas:
+        dados = df[df['hour'] == hora].dropna(subset=['temp_ponderada_pop', 'sum_load'])
+
+        X = dados[['temp_ponderada_pop']].values
+        y = dados['sum_load'].values
