@@ -12,14 +12,14 @@ def treinamento_estado(df, column_x, column_y, k=5):
     for hora in horas:
         # Filtra os dados para a hora atual
         dados = df[df['hour'] == hora]
-        dados = dados.dropna(subset=[column_x, column_y, 'weekday'])
+        dados = dados.dropna(subset=[column_x, column_y])
 
         X_temp = dados[[column_x]].values
         x2 = X_temp ** 2
-        weekday = dados[['weekday']].values  # 0 = fim de semana, 1 = dia útil
+        # weekday = dados[['weekday']].values  # 0 = fim de semana, 1 = dia útil
 
         # Empilha as variáveis para regressão múltipla: x², x, weekday, constante
-        X = np.hstack((x2, X_temp, weekday, np.ones_like(X_temp)))
+        X = np.hstack((x2, X_temp, np.ones_like(X_temp)))
 
         y = dados[column_y].values
 
@@ -58,18 +58,21 @@ def treinamento_estado(df, column_x, column_y, k=5):
 
         rmse_cv_mean = np.mean(rmse_cv_scores)
         rmse_cv_std = np.std(rmse_cv_scores)
+        
+        cv_rmse_percent = (rmse_cv_std / rmse_cv_mean) * 100 if rmse_cv_mean != 0 else 0        
 
         resultados.append({
             'hora': hora,
-            'equacao': f"y = {coef[0]:.2f}x² {coef[1]:+.2f}x {coef[2]:+.2f}weekday {coef[3]:+.2f}",
+            'equacao': f"y = {coef[0]:.2f}x² {coef[1]:+.2f}x {coef[2]:+.2f}",
             'RMSE Treino': rmse_train,
             'R² Treino': r2_train,
             'RMSE Teste': rmse_test,
             'R² Teste': r2_test,
             'RMSE Validação': rmse_val,
             'R² Validação': r2_val,
-            # 'CV RMSE Médio': rmse_cv_mean,
-            # 'CV RMSE DP': rmse_cv_std
+            'CV RMSE Médio': rmse_cv_mean,
+            'CV RMSE DP': rmse_cv_std,
+            'CV RMSE %': cv_rmse_percent
         })
 
     return pd.DataFrame(resultados)
@@ -147,7 +150,6 @@ def treinamento_regioes(df, k=5):
         resultados.append(resultado_hora)
 
     return pd.DataFrame(resultados)
-
 
 
 def treinamento_regioes_formatado(df, k=5):

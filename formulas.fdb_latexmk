@@ -1,9 +1,10 @@
 # Fdb version 4
-["pdflatex"] 1744257773 "c:/Users/Computadores Gamer/OneDrive/Área de Trabalho/serena-tcc/formulas.tex" "formulas.pdf" "formulas" 1744257774 0
+["pdflatex"] 1744490767 "c:/Users/Computadores Gamer/OneDrive/Área de Trabalho/serena-tcc/formulas.tex" "formulas.pdf" "formulas" 1744490768 0
   "c:/Users/Computadores Gamer/AppData/Roaming/TinyTeX/texmf-dist/fonts/tfm/jknappen/ec/tcrm1000.tfm" 1686706727 1536 e07581a4bb3136ece9eeb4c3ffab8233 ""
   "c:/Users/Computadores Gamer/AppData/Roaming/TinyTeX/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1686706727 1004 54797486969f23fa377b128694d548df ""
   "c:/Users/Computadores Gamer/AppData/Roaming/TinyTeX/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1686706727 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "c:/Users/Computadores Gamer/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb" 1686706728 34811 78b52f49e893bcba91bd7581cdc144c0 ""
+  "c:/Users/Computadores Gamer/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb" 1686706728 30251 6afa5cb1d0204815a708a080681d4674 ""
   "c:/Users/Computadores Gamer/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb" 1686706728 36299 5f9df58c2139e7edcf37c8fca4bd384d ""
   "c:/Users/Computadores Gamer/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb" 1686706728 36281 c355509802a035cadc5f15869451dcee ""
   "c:/Users/Computadores Gamer/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1686706728 35752 024fb6c41858982481f6968b5fc26508 ""
@@ -22,9 +23,9 @@
   "c:/Users/Computadores Gamer/AppData/Roaming/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1000.600pk" 1744255790 11524 d954fff265c37110e147966b2c2abdfc ""
   "c:/Users/Computadores Gamer/AppData/Roaming/TinyTeX/texmf-var/web2c/pdftex/pdflatex.fmt" 1686706730 6494707 7eddeeb2305c19fbe93019acf0effab5 ""
   "c:/Users/Computadores Gamer/AppData/Roaming/TinyTeX/texmf.cnf" 1686706739 956 745c4fcda01cabf0de9268e959c2ecc7 ""
-  "c:/Users/Computadores Gamer/OneDrive/Área de Trabalho/serena-tcc/formulas.tex" 1744257773 1994 0cf5a08aa527019d5c8e6ddad3e5a972 ""
-  "formulas.aux" 1744257774 32 3985256e7290058c681f74d7a3565a19 "pdflatex"
-  "formulas.tex" 1744257773 1994 0cf5a08aa527019d5c8e6ddad3e5a972 ""
+  "c:/Users/Computadores Gamer/OneDrive/Área de Trabalho/serena-tcc/formulas.tex" 1744490767 2542 bf124e59681d4dae710ba25584e5fb2e ""
+  "formulas.aux" 1744490768 32 3985256e7290058c681f74d7a3565a19 "pdflatex"
+  "formulas.tex" 1744490767 2542 bf124e59681d4dae710ba25584e5fb2e ""
   (generated)
   "formulas.aux"
   "formulas.log"

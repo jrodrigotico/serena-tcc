@@ -179,3 +179,18 @@ def plot_heatmap(df_resultados, metrica):
     plt.ylabel("")
     plt.tight_layout()
     plt.show()
+    
+    
+    
+def plot_cv_rmse_percent(df_resultados):
+    plt.figure(figsize=(12, 6))
+    plt.plot(df_resultados['hora'], df_resultados['CV RMSE %'], marker='o', linestyle='-', color='darkorange')
+    plt.title('Desvio Padrão Relativo do RMSE (CV RMSE %) por Hora')
+    plt.xlabel('Hora do Dia')
+    plt.ylabel('CV RMSE (%)')
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.xticks(df_resultados['hora'])  # Garante que todas as horas estejam no eixo x
+    for i, val in enumerate(df_resultados['CV RMSE %']):
+        plt.text(df_resultados['hora'][i], val + 0.5, f"{val:.1f}%", ha='center', fontsize=8)
+    plt.tight_layout()
+    plt.show()
