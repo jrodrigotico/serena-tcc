@@ -144,3 +144,27 @@ def grid_graficos_estacoes(df, estacao, hour=15, weekday=1):
     plt.show()
 
 
+
+def plot_metricas_por_hora(df_resultados):
+    metricas = [
+        'RMSE Treino', 'RMSE Teste', 'RMSE Validação',
+        'R² Treino', 'R² Teste', 'R² Validação',
+    ]
+
+    fig, axes = plt.subplots(2, 3, figsize=(18, 8))
+    axes = axes.flatten()
+
+    for i, metrica in enumerate(metricas):
+        ax = axes[i]
+        sns.lineplot(data=df_resultados, x='hora', y=metrica, marker='o', ax=ax)
+        ax.set_title('', fontsize=12)
+        ax.set_xlabel('Hora')
+        ax.set_ylabel(metrica)
+        ax.grid(True)
+
+        # Adiciona os valores nas linhas
+        # for x, y in zip(df_resultados['hora'], df_resultados[metrica]):
+        #     ax.text(x, y, f"{y:.2f}", ha='center', va='bottom', fontsize=8)
+
+    plt.tight_layout()
+    plt.show()
