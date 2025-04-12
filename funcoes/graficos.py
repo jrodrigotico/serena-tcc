@@ -168,3 +168,14 @@ def plot_metricas_por_hora(df_resultados):
 
     plt.tight_layout()
     plt.show()
+    
+    
+def plot_heatmap(df_resultados, metrica):
+    tabela = df_resultados.pivot(index='região', columns='hora', values=metrica)
+    plt.figure(figsize=(20, 6))
+    sns.heatmap(tabela, annot=True, fmt=".2f", cmap='coolwarm')
+    plt.title(f"Heatmap de {metrica} por região e hora")
+    plt.xlabel("Hora")
+    plt.ylabel("")
+    plt.tight_layout()
+    plt.show()

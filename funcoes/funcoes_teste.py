@@ -147,3 +147,57 @@ def treinamento_regioes(df, k=5):
         resultados.append(resultado_hora)
 
     return pd.DataFrame(resultados)
+
+
+
+def treinamento_regioes_formatado(df, k=5):
+    resultados = []
+
+    regioes = {
+        'coast': ('coast_carga', 'coast_tc'),
+        'east': ('east_carga', 'east_tc'),
+        'far_west': ('far_west_carga', 'far_west_tc'),
+        'north': ('north_carga', 'north_tc'),
+        'north_central': ('north_central_carga', 'north_central_tc'),
+        'south_central': ('south_central_carga', 'south_central_tc'),
+        'southern': ('southern_carga', 'southern_tc'),
+        'west': ('west_carga', 'west_tc')
+    }
+
+    horas = sorted(df['hour'].unique())
+
+    for hora in horas:
+        for regiao, (col_carga, col_temp) in regioes.items():
+            dados = df[df['hour'] == hora].dropna(subset=[col_carga, col_temp])
+
+            if len(dados) < k:
+                continue  # Pula se não houver dados suficientes
+
+            X = dados[[col_temp]].values
+            y = dados[col_carga].values
+
+            X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
+            X_test, X_val, y_test, y_val = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+
+            X_train_poly = np.hstack((X_train**2, X_train, np.ones_like(X_train)))
+            coef, *_ = np.linalg.lstsq(X_train_poly, y_train, rcond=None)
+
+            y_pred_train = X_train_poly @ coef
+            X_test_poly = np.hstack((X_test**2, X_test, np.ones_like(X_test)))
+            y_pred_test = X_test_poly @ coef
+            X_val_poly = np.hstack((X_val**2, X_val, np.ones_like(X_val)))
+            y_pred_val = X_val_poly @ coef
+
+            resultados.append({
+                'hora': hora,
+                'região': regiao,
+                'equação': f"y = {coef[0]:.2f}x² {coef[1]:+.2f}x {coef[2]:+.2f}",
+                'RMSE Treino': mean_squared_error(y_train, y_pred_train, squared=False),
+                'R² Treino': r2_score(y_train, y_pred_train),
+                'RMSE Teste': mean_squared_error(y_test, y_pred_test, squared=False),
+                'R² Teste': r2_score(y_test, y_pred_test),
+                'RMSE Validação': mean_squared_error(y_val, y_pred_val, squared=False),
+                'R² Validação': r2_score(y_val, y_pred_val),
+            })
+
+    return pd.DataFrame(resultados)
