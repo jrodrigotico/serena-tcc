@@ -1,0 +1,56 @@
+\documentclass{article}
+\usepackage{amsmath}
+
+\begin{document}
+
+
+
+\begin{equation}
+    \text{Carga}_t = \beta_0 + \beta_1 \cdot \text{Temp}_t + \beta_2 \cdot \text{Temp}_t^2 + \varepsilon_t
+    \end{equation}
+    
+    \begin{flushleft}
+    \textbf{Onde:}
+    \begin{itemize}
+        \item $\text{Carga}_t$: carga total do estado do Texas no instante $t$.
+        \item $\text{Temp}_t$: temperatura média simples do estado no instante $t$.
+        \item $\beta_0$, $\beta_1$, $\beta_2$: coeficientes estimados do modelo.
+        \item $\varepsilon_t$: termo de erro aleatório no instante $t$.
+    \end{itemize}
+    \end{flushleft}
+
+
+\begin{equation}
+    \text{Carga}_{t} = \beta_0 + \beta_1 \cdot \text{TempPond}_{t} + \beta_2 \cdot \text{TempPond}_{t}^2 + \varepsilon_t
+    \end{equation}
+    
+    \begin{flushleft}
+    \textbf{Onde:}
+    \begin{itemize}
+        \item $\text{Carga}_{t}$: carga total do estado do Texas no instante $t$;
+        \item $\text{TempPond}_{t}$: temperatura média ponderada pela população dos condados, agrupados por zona climática, no instante $t$;
+        \item $\beta_0$, $\beta_1$, $\beta_2$: coeficientes estimados do modelo;
+        \item $\varepsilon_t$: termo de erro aleatório no instante $t$.
+    \end{itemize}
+    \end{flushleft}
+
+
+\begin{equation}
+    \text{Carga}_{r,t} = \beta_{0,r} + \beta_{1,r} \cdot \text{Temp}_{r,t} + \beta_{2,r} \cdot \text{Temp}_{r,t}^2 + \varepsilon_{r,t}
+    \end{equation}
+    
+    \begin{flushleft}
+    \textbf{Onde:}
+    \begin{itemize}
+        \item $\text{Carga}_{r,t}$: carga elétrica da região $r$ no instante $t$;
+        \item $\text{Temp}_{r,t}$: temperatura média da região $r$ no instante $t$;
+        \item $\beta_{0,r}$, $\beta_{1,r}$, $\beta_{2,r}$: coeficientes estimados para a região $r$;
+        \item $\varepsilon_{r,t}$: termo de erro aleatório para a região $r$ e instante $t$.
+    \end{itemize}
+    \end{flushleft}
+
+
+
+
+
+\end{document}
