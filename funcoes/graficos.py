@@ -194,3 +194,28 @@ def plot_cv_rmse_percent(df_resultados):
         plt.text(df_resultados['hora'][i], val + 0.5, f"{val:.1f}%", ha='center', fontsize=8)
     plt.tight_layout()
     plt.show()
+
+
+def plot_cv_rmse_percent_todas_regioes(df_resultados):
+    regioes = df_resultados['região'].unique()
+    df_resultados = df_resultados.sort_values(by='hora')
+
+    plt.figure(figsize=(14, 7))
+
+    for regiao in regioes:
+        df_regiao = df_resultados[df_resultados['região'] == regiao]
+        plt.plot(
+            df_regiao['hora'], df_regiao['CV RMSE %'],
+            marker='o', linestyle='-', label=regiao.replace('_', ' ').capitalize()
+        )
+
+    plt.title('Desvio Padrão Relativo do RMSE (CV RMSE %) por Hora - Todas as Regiões')
+    plt.xlabel('Hora do Dia')
+    plt.ylabel('CV RMSE %')
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.xticks(sorted(df_resultados['hora'].unique()))
+    plt.legend(title='Região', bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
+    plt.show()
+
+

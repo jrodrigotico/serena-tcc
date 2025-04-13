@@ -152,6 +152,11 @@ def treinamento_regioes(df, k=5):
     return pd.DataFrame(resultados)
 
 
+from sklearn.model_selection import train_test_split, KFold
+from sklearn.metrics import mean_squared_error, r2_score
+import numpy as np
+import pandas as pd
+
 def treinamento_regioes_formatado(df, k=5):
     resultados = []
 
@@ -181,14 +186,35 @@ def treinamento_regioes_formatado(df, k=5):
             X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
             X_test, X_val, y_test, y_val = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
 
+            # Regressão quadrática
             X_train_poly = np.hstack((X_train**2, X_train, np.ones_like(X_train)))
             coef, *_ = np.linalg.lstsq(X_train_poly, y_train, rcond=None)
 
+            # Previsões
             y_pred_train = X_train_poly @ coef
             X_test_poly = np.hstack((X_test**2, X_test, np.ones_like(X_test)))
             y_pred_test = X_test_poly @ coef
             X_val_poly = np.hstack((X_val**2, X_val, np.ones_like(X_val)))
             y_pred_val = X_val_poly @ coef
+
+            # Validação cruzada no conjunto de validação
+            kf = KFold(n_splits=k, shuffle=True, random_state=42)
+            rmse_cv_scores = []
+
+            for train_idx, test_idx in kf.split(X_val):
+                X_cv_train, X_cv_test = X_val[train_idx], X_val[test_idx]
+                y_cv_train, y_cv_test = y_val[train_idx], y_val[test_idx]
+
+                X_cv_train_poly = np.hstack((X_cv_train**2, X_cv_train, np.ones_like(X_cv_train)))
+                X_cv_test_poly = np.hstack((X_cv_test**2, X_cv_test, np.ones_like(X_cv_test)))
+                coef_cv, *_ = np.linalg.lstsq(X_cv_train_poly, y_cv_train, rcond=None)
+                y_cv_pred = X_cv_test_poly @ coef_cv
+
+                rmse_cv_scores.append(mean_squared_error(y_cv_test, y_cv_pred, squared=False))
+
+            rmse_cv_mean = np.mean(rmse_cv_scores)
+            rmse_cv_std = np.std(rmse_cv_scores)
+            cv_rmse_percent = (rmse_cv_std / rmse_cv_mean) * 100
 
             resultados.append({
                 'hora': hora,
@@ -200,6 +226,9 @@ def treinamento_regioes_formatado(df, k=5):
                 'R² Teste': r2_score(y_test, y_pred_test),
                 'RMSE Validação': mean_squared_error(y_val, y_pred_val, squared=False),
                 'R² Validação': r2_score(y_val, y_pred_val),
+                'CV RMSE Médio': rmse_cv_mean,
+                'CV RMSE DP': rmse_cv_std,
+                'CV RMSE %': cv_rmse_percent
             })
 
     return pd.DataFrame(resultados)
