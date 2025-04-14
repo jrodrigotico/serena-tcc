@@ -177,9 +177,6 @@ def treinamento_regioes_formatado(df, k=5):
         for regiao, (col_carga, col_temp) in regioes.items():
             dados = df[df['hour'] == hora].dropna(subset=[col_carga, col_temp])
 
-            if len(dados) < k:
-                continue  # Pula se não houver dados suficientes
-
             X = dados[[col_temp]].values
             y = dados[col_carga].values
 
