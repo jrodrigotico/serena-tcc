@@ -88,7 +88,6 @@ def grid_graficos(df, hour, weekday=1):
     plt.show()
 
 
-
 def grid_graficos_estacoes(df, estacao, hour=15, weekday=1):
     # Lista das colunas de temperatura
     regioes = ['avg_temp_celsius', 'coast_tc', 'east_tc', 'far_west_tc', 'north_tc', 
@@ -144,7 +143,6 @@ def grid_graficos_estacoes(df, estacao, hour=15, weekday=1):
     plt.show()
 
 
-
 def plot_metricas_por_hora(df_resultados):
     metricas = [
         'RMSE Treino', 'RMSE Teste', 'RMSE Validação',
@@ -168,8 +166,8 @@ def plot_metricas_por_hora(df_resultados):
 
     plt.tight_layout()
     plt.show()
-    
-    
+
+
 def plot_heatmap(df_resultados, metrica):
     tabela = df_resultados.pivot(index='região', columns='hora', values=metrica)
     plt.figure(figsize=(20, 6))
@@ -179,9 +177,8 @@ def plot_heatmap(df_resultados, metrica):
     plt.ylabel("")
     plt.tight_layout()
     plt.show()
-    
-    
-    
+
+
 def plot_cv_rmse_percent(df_resultados):
     plt.figure(figsize=(12, 6))
     plt.plot(df_resultados['hora'], df_resultados['CV RMSE %'], marker='o', linestyle='-', color='darkorange')
