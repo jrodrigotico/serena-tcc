@@ -88,7 +88,6 @@ def grid_graficos(df, hour, weekday=1):
     plt.show()
 
 
-
 def grid_graficos_estacoes(df, estacao, hour=15, weekday=1):
     # Lista das colunas de temperatura
     regioes = ['avg_temp_celsius', 'coast_tc', 'east_tc', 'far_west_tc', 'north_tc', 
@@ -144,7 +143,6 @@ def grid_graficos_estacoes(df, estacao, hour=15, weekday=1):
     plt.show()
 
 
-
 def plot_metricas_por_hora(df_resultados):
     metricas = [
         'RMSE Treino', 'RMSE Teste', 'RMSE Validação',
@@ -168,3 +166,53 @@ def plot_metricas_por_hora(df_resultados):
 
     plt.tight_layout()
     plt.show()
+
+
+def plot_heatmap(df_resultados, metrica):
+    tabela = df_resultados.pivot(index='região', columns='hora', values=metrica)
+    plt.figure(figsize=(20, 6))
+    sns.heatmap(tabela, annot=True, fmt=".2f", cmap='coolwarm')
+    plt.title(f"Heatmap de {metrica} por região e hora")
+    plt.xlabel("Hora")
+    plt.ylabel("")
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_cv_rmse_percent(df_resultados):
+    plt.figure(figsize=(12, 6))
+    plt.plot(df_resultados['hora'], df_resultados['CV RMSE %'], marker='o', linestyle='-', color='darkorange')
+    plt.title('Desvio Padrão Relativo do RMSE (CV RMSE %) por Hora')
+    plt.xlabel('Hora do Dia')
+    plt.ylabel('CV RMSE (%)')
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.xticks(df_resultados['hora'])  # Garante que todas as horas estejam no eixo x
+    for i, val in enumerate(df_resultados['CV RMSE %']):
+        plt.text(df_resultados['hora'][i], val + 0.5, f"{val:.1f}%", ha='center', fontsize=8)
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_cv_rmse_percent_todas_regioes(df_resultados):
+    regioes = df_resultados['região'].unique()
+    df_resultados = df_resultados.sort_values(by='hora')
+
+    plt.figure(figsize=(14, 7))
+
+    for regiao in regioes:
+        df_regiao = df_resultados[df_resultados['região'] == regiao]
+        plt.plot(
+            df_regiao['hora'], df_regiao['CV RMSE %'],
+            marker='o', linestyle='-', label=regiao.replace('_', ' ').capitalize()
+        )
+
+    plt.title('Desvio Padrão Relativo do RMSE (CV RMSE %) por Hora - Todas as Regiões')
+    plt.xlabel('Hora do Dia')
+    plt.ylabel('CV RMSE %')
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.xticks(sorted(df_resultados['hora'].unique()))
+    plt.legend(title='Região', bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
+    plt.show()
+
+
