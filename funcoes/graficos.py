@@ -79,7 +79,7 @@ def grid_graficos(df, hour, weekday=1):
         ax.set_title(f"{region}")
         ax.set_xlabel("Temp (°C)")
         ax.set_ylabel("Carga")
-        ax.grid(True)
+        ax.grid(False)
         ax.legend()
 
     # Ajustes finais
@@ -158,7 +158,7 @@ def plot_metricas_por_hora(df_resultados):
         ax.set_title('', fontsize=12)
         ax.set_xlabel('Hora')
         ax.set_ylabel(metrica)
-        ax.grid(True)
+        ax.grid(False)
 
         # Adiciona os valores nas linhas
         # for x, y in zip(df_resultados['hora'], df_resultados[metrica]):
@@ -185,7 +185,6 @@ def plot_cv_rmse_percent(df_resultados):
     plt.title('Desvio Padrão Relativo do RMSE (CV RMSE %) por Hora')
     plt.xlabel('Hora do Dia')
     plt.ylabel('CV RMSE (%)')
-    plt.grid(True, linestyle='--', alpha=0.5)
     plt.xticks(df_resultados['hora'])  # Garante que todas as horas estejam no eixo x
     for i, val in enumerate(df_resultados['CV RMSE %']):
         plt.text(df_resultados['hora'][i], val + 0.5, f"{val:.1f}%", ha='center', fontsize=8)
@@ -209,7 +208,6 @@ def plot_cv_rmse_percent_todas_regioes(df_resultados):
     plt.title('Desvio Padrão Relativo do RMSE (CV RMSE %) por Hora - Todas as Regiões')
     plt.xlabel('Hora do Dia')
     plt.ylabel('CV RMSE %')
-    plt.grid(True, linestyle='--', alpha=0.5)
     plt.xticks(sorted(df_resultados['hora'].unique()))
     plt.legend(title='Região', bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.tight_layout()
